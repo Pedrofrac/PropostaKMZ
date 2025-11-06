@@ -1,0 +1,45 @@
+Clientes
+Nome: (preenchimento automatico)   
+Celular:
+e-mail:
+CPF:
+Nascimento:
+CNH (s) (n):
+Recado:
+Observações:
+                      |*mais*|         |salvar|
+1) Quando grafar o nome demais dados são prenchidos e aparece abaixo as porpostas desse cliente com opçao de edita-las
+-----------------------------------------------------------------------------------------------------------------------                    
+
+Proposta: Voce pode criar uma nova proposta ou inserir o numero da que quer editar
+Tipo:
+Categoria:
+Fabricante:
+Modelo:                             (✔)Automatico (✔)Manual (É por exclusão: só serve esse ou aquele. Sem isso em branco sistema puxa os 2)
+Ano Min: (incusive)                 Ano Max: (inclusive)
+Preço Min: (inclusive)              Preço Max: (inclusive)
+Nome: > preenchimento automatico
+
+                      |*mais*|         |salvar|
+
+A medida que vai preenchendo ele vai buscando propostas correspondentes, com opçao (✔) para marca-los:
+1)Grafou: Compra, lista "HotTip"(data+recente) todos que Vendem.
+2)Grafou: Hatch, lista "HotTip" (data+recente) Vendem/Hatch // lista Normal todos que Vedem (data+recente). 
+3)Grafou: Fiat, lista "HotTip" (data+recente) Vendem/Hatch/Fiat // lista Normal Vedem/Hatch (data+recente).
+4)Grafou: Mobi, lista "HotTip" (data+recente) Vendem/Hatch/Fiat/Mobi // lista Normal Vedem/Hatch/Fiat (data+recente).
+5)Grafou: 2020 2023, lista "HotTip" (data+recente) Vendem/Hatch/Fiat/Mobi/entre anos // lista Normal Vedem/Hatch/Fiat/Mobi (data+recente).
+6)Grafou: 50.000 53.000, lista "HotTip" (data+recente) Vendem/Hatch/Fiat/Mobi/entre anos/entre precos // lista Normal           Vendem/Hatch/Fiat/Mobi/entre anos (data+recente).
+--------------------------------------------------------------------------------------------------------------------------
+
+Publicacao: necessario complementar os dados da Proposta (anterior)
+            (✔) Fotos e/ou arte (banner/clipe), mesmos prontos, nesse caso informar meramente ilustrativo
+(✔)0KM (✔)Unico Dono (✔)Lit Bordo (manual prop) (✔)Copia Chave (✔)NF Origem (✔)Garantia Fabrica (✔)Consulta Veicular (✔) Laudo Cautelar (✔)Cambio Auto (✔)Ar Condic (✔)Dir Elétrica/Hidraulica (✔)Volante Ajustável (✔)ABS (✔)___AirBag (✔)Computador Bordo (✔)Vdo Elétrico____
+Vdo Elétrico 4P (✔)Vdo Elétrico Autom (✔)Trava Elétrica (✔)Alarme (✔)Rt Elétrico (✔)Chave Canivete (✔)Multimídia (✔)Bluetooth (✔)Som
+(✔)Volante Multifuncional (✔)Volante Couro/Sinté (✔)Banco Couro/Sinté (✔)Roda LL (✔)Piloto Automático (✔)Contl Est e Tração
+(✔)Contl Disti/Velocidade (✔)Frenagem Urgência (✔)Assistente Aclive (✔)Camera Dianteira (✔)Camera Ré (✔)S Estac Traz (✔)S Estac Diant (✔)Teto Solar (✔)Teto Panorâmico (✔)Farois Auxiliares (✔)07 Lugares (✔)Bco Mot Ajust Alt (✔)P Malas Autzado (✔)Chave Presencial (✔)StarStop (✔)Engate/Rack (✔)Combustivel _______ (✔)___Portas
+
+                              |publicar|
+
+Dispara pra todos os marcados acima 
+
+

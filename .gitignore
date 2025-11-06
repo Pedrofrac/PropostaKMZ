@@ -1,0 +1,13 @@
+# Python
+__pycache__/
+*.pyc
+venv/
+env/
+
+# IDE e S.O.
+.vscode/
+.DS_Store
+
+# Arquivos a serem ignorados
+*.exe
+*.lnk

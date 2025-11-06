@@ -1,0 +1,86 @@
+<!-- templates/index.html -->
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Sistema de Propostas</title>
+    <!-- Um CSS simples para não ficar tão feio -->
+    <style>
+        body { font-family: sans-serif; margin: 2em; }
+        .container { max-width: 800px; margin: auto; }
+        button { cursor: pointer; padding: 8px 12px; }
+        #login-area, #content-area { border: 1px solid #ccc; padding: 20px; margin-bottom: 20px; }
+        #content-area { display: none; } /* Começa escondido */
+        pre { background-color: #f4f4f4; padding: 10px; border: 1px solid #ddd; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Sistema de Propostas Web</h1>
+
+        <!-- ÁREA DE LOGIN -->
+        <div id="login-area">
+            <h2>Login</h2>
+            <input type="text" id="username" placeholder="Usuário (admin)">
+            <input type="password" id="password" placeholder="Senha (1234)">
+            <button onclick="fazerLogin()">Entrar</button>
+            <p id="login-message"></p>
+        </div>
+
+        <!-- ÁREA DE CONTEÚDO (só aparece depois do login) -->
+        <div id="content-area">
+            <h2>Dados</h2>
+            <button onclick="buscarPropostas()">Buscar Propostas</button>
+            <h3>Resultados:</h3>
+            <pre id="resultado"></pre>
+        </div>
+    </div>
+
+    <script>
+        // --- LÓGICA DO FRONTEND (JAVASCRIPT) ---
+
+        const loginArea = document.getElementById('login-area');
+        const contentArea = document.getElementById('content-area');
+        const resultadoEl = document.getElementById('resultado');
+        const loginMessageEl = document.getElementById('login-message');
+        
+        async function fazerLogin() {
+            const username = document.getElementById('username').value;
+            const password = document.getElementById('password').value;
+
+            // `fetch` é como o JavaScript chama as rotas do backend Flask
+            const response = await fetch('/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ username, password })
+            });
+
+            const data = await response.json();
+
+            if (data.success) {
+                loginArea.style.display = 'none';
+                contentArea.style.display = 'block';
+            } else {
+                loginMessageEl.textContent = data.message;
+                loginMessageEl.style.color = 'red';
+            }
+        }
+
+        async function buscarPropostas() {
+            resultadoEl.textContent = 'Carregando...';
+            try {
+                // Chama a API '/api/propostas' que criamos no Flask
+                const response = await fetch('/api/propostas');
+                const propostas = await response.json();
+
+                // Exibe os dados formatados na tela
+                resultadoEl.textContent = JSON.stringify(propostas, null, 2);
+            } catch (error) {
+                resultadoEl.textContent = 'Erro ao buscar dados.';
+                console.error(error);
+            }
+        }
+    </script>
+</body>
+</html>
