@@ -1,0 +1,62 @@
+# dados.py
+# Este arquivo serve como um "banco de dados" central para todas as listas
+# estáticas que serão usadas na aplicação.
+
+FABRICANTES = [
+    ("21", "FIAT"),("59", "VW"),("26", "HYUNDAI"),("56", "TOYOTA"),("25", "HONDA"),
+    ("48", "RENAULT"),("29", "JEEP"),("43", "NISSAN"),("5", "A MOTORS"), ("3", "A ROMEO"),
+    ("1", "ACURA"), ("2", "AGRALE"), ("4", "AM GEN"),("6", "AUDI"), ("7", "BMW"),
+    ("8", "BRM"), ("9", "BUGGY"), ("123", "BUGRE"),("14", "C LANDER"), ("10", "CADILLAC"),
+    ("11", "CBT JIPE"), ("136", "CHANA"), ("182", "CHANGAN"),("161", "CHERY"),
+    ("23", "CHEVROLET"), ("12", "CHRYSLER"), ("13", "CITROEN"), ("15", "DAEWOO"),
+    ("16", "DAIHATSU"), ("17", "DODGE"), ("147", "EFFA"), ("18", "ENGESA"),
+    ("19", "ENVEMO"), ("20", "FERRARI"),  ("149", "FIBRAVAN"), ("22", "FORD"),
+    ("170", "FYBER"), ("153", "GREAT WALL"), ("24", "GURGEL"), ("152", "HAFEI"),
+    ("27", "ISUZU"), ("177", "JAC"), ("28", "JAGUAR"),  ("154", "JINBEI"),("30", "JPX"),
+    ("31", "KIA"), ("32", "LADA"), ("171", "LAMBORGHINI"), ("33", "LAND ROVER"),
+    ("34", "LEXUS"), ("168", "LIFAN"), ("127", "LOBINI"), ("35", "LOTUS"),
+    ("140", "MAHINDRA"),("36", "MASERATI"), ("37", "MATRA"), ("38", "MAZDA"),
+    ("40", "MERCURY"), ("167", "MB"),("156", "MINI"), ("41", "MITSUBISHI"),
+    ("42", "MIURA"), ("44", "PEUGEOT"),("45", "PLYMOUTH"), ("46", "PONTIAC"),
+    ("47", "PORSCHE"), ("185", "RAM"), ("186", "RELY"),("49", "ROVER"), ("50", "SAAB"),
+    ("51", "SATURN"), ("52", "SEAT"),("183", "SHINERAY"), ("157", "SMART"),
+    ("125", "SSANGYONG"), ("54", "SUBARU"), ("55", "SUZUKI"),("165", "TAC"),
+    ("57", "TROLLER"), ("58", "VOLVO"),("163", "WAKE"), ("120", "WALK")
+]
+
+MODELOS = {
+    "AUDI": ["A3"], "BMW": ["325I", "325iS", "BMW 316I", "F300", "X1"], "CHERY": ["QQ"],
+    "CHEVROLET": ["A20", "ADVANCED D", "AGILE", "ASTRA", "AVALANCHE", "BEL AIR", "BLAZER", "BONANZA", "BRASIL", "BRASINCA", "C10", "C14", "C15", "C20", "CALIBRA", "CAMARO", "CAPRICE", "CAPTIVA", "CARAVAN", "CAVALIER", "CELTA", "CHEVELLE", "CHEVETTE", "CHEVY 500", "CHEYENNE", "CLASSIC", "COBALT", "CORSA", "CORVETTE", "CORVETTE G SP", "CRUZE", "D10", "D20", "DE LUXE", "EL CAMINO", "FLEETMASTER", "GRAND BLAZER", "HHR", "IMPALA", "IPANEMA", "JOY", "KADETT", "LUMINA", "MALIBU", "MERIVA", "MONTANA", "MONZA", "OMEGA", "ONIX", "OPALA", "PICKUP", "PRISMA", "S10", "SILVERADO", "SONIC", "SPACE VAN", "SPIN", "SPORT VAN", "SS", "SSR", "SUBURBAN", "SUPREMA", "TAHOE", "TIGRA", "TRACKER", "TRAILBLAZER", "VECTRA", "VERANEIO", "ZAFIRA"],
+    "CHRYSLER": ["PT CRUISER"], "CITROEN": ["AIRCROSS", "C3", "C4", "XSARA PCSO"], "DODGE": ["RAM"],
+    "FIAT": ["124", "147", "500", "ARGO", "BRAVA", "BRAVO", "CINQUECENTO", "COUPÉ", "CRONOS", "DOBLO", "DUCATO", "DUNA", "ELBA", "FIORINO", "FREEMONT", "GRAND SIENA", "IDEA", "LINEA", "MAREA", "MOBI", "OGGI", "PALIO", "PANORAMA", "PREMIO", "PULSE", "PUNTO", "SIENA", "STILO", "STRADA", "TEMPRA", "TIPO", "TORO", "UNO"],
+    "FORD": ["A", "BELINA", "CLUB WAGON", "CORCEL", "CORCEL II", "COURIER", "CUSTOM", "DEL REY", "ECOSPORT", "EDGE", "ESCAPE", "ESCORT", "EXPLORER", "F-1", "F-100", "F-1000", "F-150", "F-250", "F-350", "F-4000", "F-75", "FAIRLANE", "FIESTA", "FLEX", "FOCUS", "FURGLAINE", "FUSION", "GALAXIE", "GT", "IBIZA", "JEEP", "KA", "KA +", "LANDAU", "MAVERICK", "MONDEO", "MUSTANG", "MUSTANG V6", "PAMPA", "PHAETON", "RANGER", "ROYALE", "RURAL", "SUPER DLUX", "TAURUS", "THUNDERBIRD", "TRANSIT", "TUDOR", "VERONA", "VERSAILLES"],
+    "HONDA": ["ACCORD", "BIZ", "CB", "CB 500", "CB 600", "CB 650", "CBR", "CG", "CITY", "CIVIC", "CRV", "FIT", "HR-V", "LEGEND", "NXR", "ODYSSEY", "PCX", "PILOT", "PRELUDE", "XRE"],
+    "HYUNDAI": ["ACCENT", "ATOS", "AZERA", "CRETA", "ELANTRA", "EQUUS", "GALLOPER", "GENESIS", "GRAND STA FÉ", "H1 STAREX", "H100", "HB20", "HB20S", "HB20X", "HR", "I30", "I30 CW", "IX35", "SANTA FÉ", "SONATA", "TERRACAN", "TIBURON", "TUCSON", "VELOSTER", "VERA CRUZ"],
+    "IVECO": ["DAILY"], "JEEP": ["CHEROKEE", "COMPASS", "GRAND CHEROKEE", "RENEGADE", "WRANGLER"],
+    "KIA": ["BESTA", "BONGO", "CADENZA", "CARENS", "CARNIVAL", "CERATO", "CLARUS", "MAGENTIS", "MOHAVE", "OPIRUS", "OPTIMA", "PICANTO", "QUORIS", "SHUMA", "SORENTO", "SOUL", "SPORTAGE"],
+    "LAND ROVER": ["DEFENDER", "DISCOVERY", "DISCOVERY 2", "DISCOVERY 3", "DISCOVERY 4", "FREELANDER", "FREELANDER 2", "RANGE ROVER", "RANGE ROVER SPORT", "RANGE ROVER VOGUE", "RANGER ROVER EVOQUE", "RANGER ROVER VELAR"],
+    "MERC BENZ": ["L1620"], "MINI": ["COOPER"], "MITSUBISHI": ["L200", "OUTLANDER", "PAJERO SPORT", "PAJERO TR4"], "MUUV": ["BEACH"],
+    "NISSAN": ["240SX", "300 ZX", "350Z", "370Z", "ALTIMA", "ARMADA", "FRONTIER", "GRAND LIVINA", "GT-R", "JUKE", "KICKS", "LIVINA", "MARCH", "MAXIMA", "MURANO", "PATHFINDER", "QUEST", "SENTRA", "TERRANO", "TIIDA", "VERSA", "X-TRAIL", "XTERRA"],
+    "PEUGEOT": ["106", "2008", "205", "206", "207", "208", "3008", "306", "307", "308", "405", "406", "407", "408", "504", "508", "605", "607", "BOXER", "HOGGAR", "PARTNER", "RCZ"],
+    "RENAULT": ["19", "CAPTUR", "CLIO", "DAUPHINE", "DUSTER", "DUSTER OROCH", "EXPRESS", "FLUENCE", "GORDINI", "GRAND SCENIC", "KANGOO", "KWID", "LAGUNA", "LOGAN", "MASTER", "MEGANE", "SANDERO", "SCENIC", "SYMBOL", "TRAFIC", "TWINGO"],
+    "SUZUKI": ["BALENO", "GRAND VITARA", "IGNIS", "JIMNY", "S-CROSS", "SAMURAI", "SIDEKICK", "SWIFT", "SX4", "VITARA"],
+    "TOYOTA": ["4RUNNER", "AVALON", "BANDEIRANTE", "CAMRY", "CELICA", "COROLLA", "CORONA", "ETIOS", "ETIOS CROSS", "FIELDER", "FJ CRUISER", "HIGHLANDER", "HILUX", "HILUX SW4", "LAND C PRADO", "LEXUS", "MR-2", "PASEO", "PREVIA", "PRIUS", "RAV4", "SIENNA", "TUNDRA", "VENZA"],
+    "VEICULOS ESPECIAS": ["CONJUNTO PESCA"],
+    "VOLVO": ["460", "850", "960", "C30", "C70", "S40", "S60", "S70", "S80", "V40", "V50", "V60", "V70", "XC60", "XC70", "XC90"],
+    "VW": ["1300", "1600", "AMAROK", "APOLLO", "BORA", "BRASILIA", "BUGGY", "CARAVELLE", "CROSS UP", "CROSSFOX", "EOS", "EUROVAN", "FOX", "FUSCA", "GOL", "GOLF", "JETTA", "KARMANN-G", "KOMBI", "LOGUS", "NEW BEETLE", "NIVUS", "PARATI", "PASSAT", "PASSAT VAR", "POINTER", "POLO", "POLO SEDAN", "QUANTUM", "SANTANA", "SAVEIRO", "SCIROCCO", "SP2", "SPACE CROSS", "SPACEFOX", "T-CROSS", "TIGUAN", "TL", "TOUAREG", "UP", "VAN", "VARIANT", "VARIANT II", "VIRTUS", "VOYAGE"],
+    "YAMAHA": ["XTZ250"]
+}
+
+CORS = [
+    ("8", "AMARELA"), ("2", "AZUL"), ("5", "AZUL MT"), ("19", "BEGE"),
+    ("1", "BRANCA"), ("18", "BRANCO PL"), ("16", "CINZA"), ("7", "CINZA MT"), ("12", "DOURADA"),
+    ("17", "LARANJA"), ("13", "LILÁS"), ("10", "MARRON"), ("9", "PRATA"), ("4", "PRETA"),
+    ("11", "PRETA MT"), ("21", "ROSA"), ("3", "ROXO"), ("22", "VERDE"),
+    ("23", "VERDE MT"), ("6", "VERMELHA"), ("15", "VERMELHO MT"), ("20", "VINHO")
+]
+
+CATEGORIAS = [
+    ("26", "Hatch"), ("16", "Sedan"), ("20", "SUV"), ("14", "Picape"),
+    ("14", "Perua"), ("11", "Minivan"), ("13", "Off-Road"), ("24", "Van"),
+    ("1", "Caminhão"), ("2", "Outros")
+]
