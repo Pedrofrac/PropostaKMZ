@@ -11,7 +11,7 @@
         "preco_max": "35000",
         "tipo": "Compra",
         "data_inclusao": "20-09-2024",
-        "pessoa_empresa": "Jo\u00c3\u00a3o Silva"
+        "pessoa_empresa": "JoÃ£o Silva"
     },
     {
         "id": "1",
@@ -151,7 +151,7 @@
         "preco_max": "110000",
         "tipo": "Compra",
         "data_inclusao": "26-09-2024",
-        "pessoa_empresa": "Andr\u00c3\u00a9 Gomes"
+        "pessoa_empresa": "AndrÃ© Gomes"
     },
     {
         "id": "13",
@@ -207,7 +207,7 @@
         "preco_max": "140000",
         "tipo": "Compra",
         "data_inclusao": "28-09-2024",
-        "pessoa_empresa": "Jo\u00c3\u00a3o Silva"
+        "pessoa_empresa": "JoÃ£o Silva"
     },
     {
         "id": "17",
@@ -375,7 +375,7 @@
         "preco_max": "70000",
         "tipo": "Compra",
         "data_inclusao": "04-10-2024",
-        "pessoa_empresa": "Andr\u00c3\u00a9 Gomes"
+        "pessoa_empresa": "AndrÃ© Gomes"
     },
     {
         "id": "29",
@@ -529,7 +529,7 @@
         "preco_max": "65000",
         "tipo": "Compra",
         "data_inclusao": "10-10-2024",
-        "pessoa_empresa": "Patr\u00c3\u00adcia Lopes"
+        "pessoa_empresa": "PatrÃ­cia Lopes"
     },
     {
         "id": "40",
@@ -585,7 +585,7 @@
         "preco_max": "220000",
         "tipo": "Compra",
         "data_inclusao": "12-10-2024",
-        "pessoa_empresa": "B\u00c3\u00a1rbara Cruz"
+        "pessoa_empresa": "BÃ¡rbara Cruz"
     },
     {
         "id": "44",
@@ -809,7 +809,7 @@
         "preco_max": "115000",
         "tipo": "Compra",
         "data_inclusao": "20-10-2024",
-        "pessoa_empresa": "Patr\u00c3\u00adcia Lopes"
+        "pessoa_empresa": "PatrÃ­cia Lopes"
     },
     {
         "id": "60",
@@ -823,7 +823,7 @@
         "preco_max": "64.900",
         "tipo": "Venda",
         "data_inclusao": "29-10-2025",
-        "pessoa_empresa": "KMZ Ve\u00edculos"
+        "pessoa_empresa": "KMZ Veículos"
     },
     {
         "id": "61",
@@ -880,5 +880,19 @@
         "tipo": "Venda",
         "data_inclusao": "30-10-2025",
         "pessoa_empresa": "Cassia"
+    },
+    {
+        "tipo": "Compra",
+        "pessoa_empresa": "Pedro teste",
+        "categoria": "Caminhão",
+        "fabricante": "",
+        "modelo": "",
+        "ano_min": "2012",
+        "ano_max": "",
+        "cor": "",
+        "preco_min": "",
+        "preco_max": "",
+        "id": "66",
+        "data_inclusao": "06-11-2025"
     }
 ]
