@@ -8,10 +8,12 @@ from dados import FABRICANTES, CATEGORIAS, MODELOS, CORS
 from routes_clientes import clientes_bp
 
 app = Flask(__name__)
+# Registra o Blueprint que contém todas as rotas de clientes (/api/clientes/...)
 app.register_blueprint(clientes_bp)
 
 # --- FUNÇÕES AUXILIARES DE ARQUIVO ---
 def carregar_dados_do_arquivo(nome_arquivo):
+    """Carrega dados de um arquivo JSON de forma segura."""
     try:
         with open(nome_arquivo, 'r', encoding='utf-8') as f:
             return json.load(f)
@@ -22,6 +24,7 @@ def carregar_dados_do_arquivo(nome_arquivo):
         return []
 
 def salvar_dados_no_arquivo(nome_arquivo, dados):
+    """Salva dados em um arquivo JSON de forma segura."""
     try:
         with open(nome_arquivo, 'w', encoding='utf-8') as f:
             json.dump(dados, f, indent=4, ensure_ascii=False)
@@ -32,18 +35,19 @@ def salvar_dados_no_arquivo(nome_arquivo, dados):
 
 # --- FUNÇÃO CENTRAL DE FILTRAGEM ---
 def filtra_propostas(criterios, lista_de_propostas):
+    """Filtra uma lista de propostas com base em um dicionário de critérios."""
     resultados = []
     for proposta in lista_de_propostas:
         compativel = True
         
-        # Filtros de texto simples
+        # Filtros de texto simples (match exato)
         for campo in ['categoria', 'fabricante', 'modelo', 'cor']:
             if criterios.get(campo) and criterios[campo] != proposta.get(campo):
                 compativel = False
                 break
         if not compativel: continue
 
-        # Filtro de Câmbio (Exclusão: Apenas um pode ser selecionado para filtrar)
+        # Filtro de Câmbio (Exclusão mútua: apenas um pode ser selecionado para filtrar)
         manual_desejado = criterios.get('cambio_manual', False)
         automatico_desejado = criterios.get('cambio_automatico', False)
         if manual_desejado and not automatico_desejado and proposta.get('cambio') != 'Manual':
@@ -52,7 +56,7 @@ def filtra_propostas(criterios, lista_de_propostas):
             compativel = False
         if not compativel: continue
 
-        # Filtros de intervalo (Ano e Preço)
+        # Filtros de intervalo numérico (Ano e Preço)
         try:
             # Ano
             if criterios.get('ano_min') or criterios.get('ano_max'):
@@ -66,50 +70,59 @@ def filtra_propostas(criterios, lista_de_propostas):
 
             # Preço
             if criterios.get('preco_min') or criterios.get('preco_max'):
+                # Normaliza os valores removendo pontos e tratando strings vazias
                 prop_preco_min = float(str(proposta.get('preco_min') or 0).replace('.', ''))
-                prop_preco_max = float(str(proposta.get('preco_max') or 99999999).replace('.', ''))
+                prop_preco_max = float(str(proposta.get('preco_max') or '999999999').replace('.', ''))
                 crit_preco_min = float(str(criterios.get('preco_min') or 0).replace('.', ''))
-                crit_preco_max = float(str(criterios.get('preco_max') or 99999999).replace('.', ''))
+                crit_preco_max = float(str(criterios.get('preco_max') or '999999999').replace('.', ''))
                 if not (prop_preco_max >= crit_preco_min and prop_preco_min <= crit_preco_max):
                     compativel = False
         except (ValueError, TypeError):
-            compativel = False
+            compativel = False # Ignora a proposta se houver erro de conversão
         
         if compativel:
             resultados.append(proposta)
+            
     return resultados
 
 
-# --- ROTAS PRINCIPAIS E DE DADOS ---
+# --- ROTAS DA APLICAÇÃO PRINCIPAL E DADOS ESTÁTICOS ---
 @app.route('/')
 def index():
+    """Renderiza a página principal."""
     return render_template('index.html')
 
 @app.route('/login', methods=['POST'])
 def login():
+    """Valida o login do usuário."""
     data = request.get_json()
+    # Em um sistema real, isso seria validado contra um banco de dados seguro.
     if data.get('username') == 'admin' and data.get('password') == '1234':
         return jsonify({"success": True})
     return jsonify({"success": False, "message": "Usuário ou senha inválidos."}), 401
     
 @app.route('/api/dados/fabricantes', methods=['GET'])
 def get_fabricantes():
-    lista = [{"id": id, "nome": nome} for id, nome in FABRICANTES]
+    """Retorna a lista de fabricantes."""
+    lista = [{"id": nome, "nome": nome} for _, nome in FABRICANTES]
     return jsonify(sorted(lista, key=lambda f: f['nome']))
 
 @app.route('/api/dados/categorias', methods=['GET'])
 def get_categorias():
-    lista = [{"id": id, "nome": nome} for id, nome in CATEGORIAS]
+    """Retorna a lista de categorias."""
+    lista = [{"id": nome, "nome": nome} for _, nome in CATEGORIAS]
     return jsonify(sorted(lista, key=lambda c: c['nome']))
 
 @app.route('/api/dados/modelos/<fabricante_nome>', methods=['GET'])
 def get_modelos(fabricante_nome):
+    """Retorna os modelos de um fabricante específico."""
     modelos = MODELOS.get(fabricante_nome.upper(), [])
     return jsonify(sorted(modelos))
 
 @app.route('/api/dados/cores', methods=['GET'])
 def get_cores():
-    lista = [{"id": id, "nome": nome} for id, nome in CORS]
+    """Retorna a lista de cores."""
+    lista = [{"id": nome, "nome": nome} for _, nome in CORS]
     return jsonify(sorted(lista, key=lambda c: c['nome']))
 
 
@@ -117,15 +130,21 @@ def get_cores():
 
 @app.route('/api/propostas/pesquisar', methods=['POST'])
 def pesquisar_propostas():
+    """Endpoint principal de pesquisa, que retorna resultados diretos e 'hot tips'."""
     criterios = request.get_json()
     todas_as_propostas = carregar_dados_do_arquivo('propostas.json')
 
+    # Define o tipo oposto para encontrar "matches" (Compra vs Venda)
     tipo_oposto = {"Compra": "Venda", "Venda": "Compra"}.get(criterios.get('tipo'))
+    
+    # Se um tipo foi selecionado, busca apenas o oposto. Se não, busca tudo.
     propostas_base = [p for p in todas_as_propostas if p.get('tipo') == tipo_oposto or not criterios.get('tipo')]
     
+    # Filtra os resultados principais com os critérios exatos
     resultados_principais = filtra_propostas(criterios, propostas_base)
     ids_ja_encontrados = {p['id'] for p in resultados_principais}
 
+    # Lógica de "Hot Tips" (sugestões com filtros relaxados)
     hot_tips = []
     ordem_relaxamento = [
         {'campo': 'cor', 'label': 'Cor'}, {'campo': 'preco', 'label': 'Preço'}, {'campo': 'ano', 'label': 'Ano'},
@@ -138,6 +157,7 @@ def pesquisar_propostas():
 
     for item in ordem_relaxamento:
         campo_removido = False
+        # Lógica para remover campos de intervalo ou checkbox
         if item['campo'] == 'preco' and any(k in criterios_relaxados for k in ['preco_min', 'preco_max']):
             criterios_relaxados.pop('preco_min', None); criterios_relaxados.pop('preco_max', None); campo_removido = True
         elif item['campo'] == 'ano' and any(k in criterios_relaxados for k in ['ano_min', 'ano_max']):
@@ -165,6 +185,7 @@ def pesquisar_propostas():
 
 @app.route('/api/propostas/salvar', methods=['POST'])
 def salvar_proposta():
+    """Salva uma nova proposta ou atualiza uma existente."""
     proposta_data = request.get_json()
     proposta_id = proposta_data.get('id')
 
@@ -201,6 +222,7 @@ def salvar_proposta():
 
 @app.route('/api/propostas/excluir/<proposta_id>', methods=['DELETE'])
 def excluir_proposta(proposta_id):
+    """Exclui uma proposta pelo seu ID."""
     todas_as_propostas = carregar_dados_do_arquivo('propostas.json')
     proposta_a_remover = next((p for p in todas_as_propostas if str(p.get('id')) == str(proposta_id)), None)
 
@@ -215,6 +237,7 @@ def excluir_proposta(proposta_id):
 
 @app.route('/api/propostas/por-cliente/<path:nome_cliente>', methods=['GET'])
 def propostas_por_cliente(nome_cliente):
+    """Retorna todas as propostas de um cliente específico."""
     nome_decodificado = unquote(nome_cliente)
     todas_as_propostas = carregar_dados_do_arquivo('propostas.json')
     propostas_do_cliente = [p for p in todas_as_propostas if p.get('pessoa_empresa') == nome_decodificado]
@@ -222,11 +245,12 @@ def propostas_por_cliente(nome_cliente):
 
 @app.route('/api/propostas/<proposta_id>', methods=['GET'])
 def get_proposta_por_id(proposta_id):
+    """Busca e retorna uma única proposta pelo seu ID."""
     todas_as_propostas = carregar_dados_do_arquivo('propostas.json')
     proposta = next((p for p in todas_as_propostas if str(p.get('id')) == str(proposta_id)), None)
     if proposta:
         return jsonify(proposta)
-    return jsonify({"message": "Proposta não encontrada"}), 404
+    return jsonify({"success": False, "message": "Proposta não encontrada"}), 404
 
 
 if __name__ == '__main__':

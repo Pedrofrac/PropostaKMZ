@@ -16,8 +16,19 @@
         .select2-container--bootstrap-5 .select2-selection { min-height: calc(1.5em + .75rem + 2px); padding: .375rem .75rem; font-size: 1rem; }
         .form-control::placeholder { color: #6c757d; opacity: 0.5; }
         .accordion-button:not(.collapsed) { background-color: #e7f1ff; }
-        .tooltip-inner { white-space: pre-wrap; text-align: left; }
-        .bi-info-circle { cursor: help; color: #6c757d; }
+        .tooltip-inner { white-space: pre-wrap; text-align: left; max-width: 300px; }
+        .bi-info-circle, .cambio-icon, .color-swatch { cursor: help; }
+        .btn-icon { padding: 0.25rem 0.5rem; font-size: 0.9rem; line-height: 1.5; }
+        .color-swatch {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            border-radius: 3px;
+            border: 1px solid rgba(0,0,0,0.2);
+            vertical-align: -0.125em;
+            margin-left: 4px;
+        }
+        table td, table th { white-space: nowrap; }
     </style>
 </head>
 <body>
@@ -39,7 +50,7 @@
 
             <ul class="nav nav-tabs" id="myTab" role="tablist">
                 <li class="nav-item" role="presentation"><button class="nav-link active" id="tab-propostas" data-bs-toggle="tab" data-bs-target="#propostas" type="button">Gestão de Propostas</button></li>
-                <li class="nav-item" role="presentation"><button class="nav-link" data-bs-toggle="tab" data-bs-target="#clientes" type="button">Gestão de Clientes</button></li>
+                <li class="nav-item" role="presentation"><button class="nav-link" id="tab-clientes-nav" data-bs-toggle="tab" data-bs-target="#clientes" type="button">Gestão de Clientes</button></li>
             </ul>
 
             <div class="tab-content card shadow-sm" id="myTabContent">
@@ -77,11 +88,11 @@
                     <hr>
                     <h4>Hot Tips</h4>
                     <div class="table-responsive">
-                        <table class="table table-striped table-hover">
+                        <table class="table table-striped table-hover table-sm">
                             <thead>
                                 <tr>
-                                    <th>ID</th><th>Data</th><th>Tipo</th><th>Categoria</th><th>Fabricante</th><th>Modelo</th>
-                                    <th>Câmbio</th><th>Ano</th><th>Preço</th><th>Cor</th><th>Anunciante</th><th>Ações</th>
+                                    <th>ID</th><th>Data</th><th>Tipo</th><th>Categoria</th><th>Veículo</th>
+                                    <th>Ano</th><th>Preço</th><th>Ações</th>
                                 </tr>
                             </thead>
                             <tbody id="resultado-propostas"></tbody>

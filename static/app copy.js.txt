@@ -70,91 +70,6 @@ function preencherFormularioProposta(proposta) {
     window.scrollTo(0, 0);
 }
 
-/**
- * Função central para renderizar qualquer tabela de propostas no sistema.
- * @param {HTMLElement} tbody - O elemento tbody da tabela a ser preenchido.
- * @param {Array} propostas - A lista de objetos de proposta.
- * @param {boolean} isSuggestion - Se true, não renderiza a coluna de ações de edição/exclusão.
- */
-function renderizarTabelaPropostas(tbody, propostas, isSuggestion = false) {
-    const colspan = isSuggestion ? 7 : 8;
-    tbody.innerHTML = '';
-    
-    if (!propostas || propostas.length === 0) {
-        tbody.innerHTML = `<tr><td colspan="${colspan}" class="text-center">Nenhuma proposta encontrada.</td></tr>`;
-        return;
-    }
-
-    propostas.forEach(p => {
-        const tr = document.createElement('tr');
-        tr.dataset.proposta = JSON.stringify(p);
-        
-        const ano = (p.ano_min && p.ano_max && p.ano_min !== p.ano_max) ? `${p.ano_min}-${p.ano_max}` : (p.ano_min || p.ano_max || '');
-        
-        let precoExibido = '';
-        const precoMinF = p.preco_min ? new Intl.NumberFormat('pt-BR').format(p.preco_min) : '';
-        const precoMaxF = p.preco_max ? new Intl.NumberFormat('pt-BR').format(p.preco_max) : '';
-        if (precoMinF && precoMaxF) {
-            precoExibido = (precoMinF === precoMaxF) ? precoMaxF : `${precoMinF} - ${precoMaxF}`;
-        } else {
-            precoExibido = precoMinF || precoMaxF;
-        }
-
-        const badge = `<span class="badge bg-${p.tipo === 'Compra' ? 'primary' : 'success'} text-capitalize">${p.tipo}</span>`;
-        
-        let cambioIcon = '';
-        if (p.cambio === 'Automatico') {
-            cambioIcon = `<i class="bi bi-gear-wide-connected cambio-icon text-muted ms-1" data-bs-toggle="tooltip" title="Automático"></i>`;
-        } else if (p.cambio === 'Manual') {
-            cambioIcon = `<i class="bi bi-gear cambio-icon text-muted ms-1" data-bs-toggle="tooltip" title="Manual"></i>`;
-        }
-        
-        let corSwatch = '';
-        if (p.cor) {
-            const corMap = { "BRANCA": "white", "PRETA": "black", "PRATA": "silver", "CINZA": "gray", "VERMELHA": "red", "AZUL": "blue", "VERDE": "green", "AMARELA": "yellow", "MARRON": "saddlebrown", "DOURADA": "gold", "VINHO": "maroon" };
-            const corCss = corMap[p.cor.toUpperCase()] || p.cor.toLowerCase();
-            const corStyle = `background-color: ${corCss};`;
-            corSwatch = `<span class="color-swatch" style="${corStyle}" data-bs-toggle="tooltip" title="${p.cor}"></span>`;
-        }
-        
-        const anunciante = p.pessoa_empresa ? `<span class="text-muted fst-italic">(${p.pessoa_empresa})</span>` : '';
-        let veiculoDesc = `${p.fabricante || ''} - ${p.modelo || ''} ${anunciante}${cambioIcon}${corSwatch}`;
-        
-        let cols = `
-            <td class="text-nowrap">${p.id}</td>
-            <td class="text-nowrap">${p.data_inclusao}</td>
-            <td class="text-nowrap">${badge}</td>
-            <td class="text-nowrap">${p.categoria||''}</td>
-            <td class="text-nowrap">${veiculoDesc}</td>
-            <td class="text-nowrap">${ano}</td>
-            <td class="text-nowrap">${precoExibido}</td>
-        `;
-
-        if (!isSuggestion) {
-            cols += `<td class="text-nowrap">
-                        <button class="btn btn-sm btn-warning btn-icon btn-editar-proposta" data-bs-toggle="tooltip" title="Editar">
-                            <i class="bi bi-pencil-square"></i>
-                        </button> 
-                        <button class="btn btn-sm btn-danger btn-icon btn-excluir-proposta" data-id="${p.id}" data-bs-toggle="tooltip" title="Excluir">
-                            <i class="bi bi-trash"></i>
-                        </button>
-                     </td>`;
-        } else {
-             // Para sugestões, podemos adicionar um botão de visualização se quisermos
-            cols += `<td class="text-nowrap">
-                        <button class="btn btn-sm btn-primary btn-icon btn-visualizar-proposta" data-id="${p.id}" data-bs-toggle="tooltip" title="Ver/Editar Proposta">
-                            <i class="bi bi-eye"></i>
-                        </button>
-                    </td>`;
-        }
-        tr.innerHTML = cols;
-        tbody.appendChild(tr);
-    });
-    
-    [...tbody.querySelectorAll('[data-bs-toggle="tooltip"]')].map(el => new bootstrap.Tooltip(el));
-}
-
-
 document.addEventListener('DOMContentLoaded', () => {
     // MAPEAMENTO DE ELEMENTOS
     const loginArea = document.getElementById('login-area'), mainContent = document.getElementById('main-content');
@@ -195,8 +110,46 @@ document.addEventListener('DOMContentLoaded', () => {
         dispararPesquisa();
     };
 
+    const renderizarTabela = (tbody, propostas, isSuggestion = false) => {
+        const colspan = isSuggestion ? 11 : 12;
+        tbody.innerHTML = '';
+        if (!propostas || propostas.length === 0) {
+            tbody.innerHTML = `<tr><td colspan="${colspan}" class="text-center">Nenhuma proposta encontrada.</td></tr>`;
+            return;
+        }
+        propostas.forEach(p => {
+            const tr = document.createElement('tr');
+            tr.dataset.proposta = JSON.stringify(p);
+            
+            const ano = (p.ano_min && p.ano_max && p.ano_min !== p.ano_max) ? `${p.ano_min}-${p.ano_max}` : (p.ano_min || p.ano_max || '');
+            
+            // CORREÇÃO: Lógica para formatar o preço, garantindo que valores vazios resultem em string vazia.
+            let precoExibido = '';
+            const precoMinF = p.preco_min ? new Intl.NumberFormat('pt-BR').format(p.preco_min) : '';
+            const precoMaxF = p.preco_max ? new Intl.NumberFormat('pt-BR').format(p.preco_max) : '';
+            if (precoMinF && precoMaxF) {
+                precoExibido = (precoMinF === precoMaxF) ? precoMaxF : `${precoMinF} - ${precoMaxF}`;
+            } else if (precoMinF) {
+                precoExibido = precoMinF;
+            } else if (precoMaxF) {
+                precoExibido = precoMaxF;
+            }
+
+            const badge = `<span class="badge bg-${p.tipo === 'Compra' ? 'primary' : 'success'} text-capitalize">${p.tipo}</span>`;
+            const obsIcon = p.observacoes ? `<i class="bi bi-info-circle ms-1"></i>` : '';
+
+            let cols = `<td>${p.id}</td><td>${p.data_inclusao}</td><td>${badge}</td><td>${p.categoria||''}</td><td>${p.fabricante||''}</td><td>${p.modelo||''}</td><td>${p.cambio||''}</td><td>${ano}</td><td>${precoExibido}</td><td>${p.cor||''}</td><td data-bs-toggle="tooltip" title="${p.observacoes||'Sem observações.'}">${p.pessoa_empresa||''} ${obsIcon}</td>`;
+            if (!isSuggestion) {
+                cols += `<td><button class="btn btn-sm btn-warning btn-editar-proposta">Editar</button> <button class="btn btn-sm btn-danger btn-excluir-proposta" data-id="${p.id}">Excluir</button></td>`;
+            }
+            tr.innerHTML = cols;
+            tbody.appendChild(tr);
+        });
+        [...tbody.querySelectorAll('[data-bs-toggle="tooltip"]')].map(el => new bootstrap.Tooltip(el));
+    };
+
     const dispararPesquisa = async () => {
-        tbodyPropostas.innerHTML = `<tr><td colspan="8" class="text-center">Buscando...</td></tr>`;
+        tbodyPropostas.innerHTML = `<tr><td colspan="12" class="text-center">Buscando...</td></tr>`;
         hotTipsAccordion.innerHTML = '';
         
         const criterios = {
@@ -208,38 +161,22 @@ document.addEventListener('DOMContentLoaded', () => {
         try {
             const response = await fetch('/api/propostas/pesquisar', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify(criterios) });
             const data = await response.json();
-            renderizarTabelaPropostas(tbodyPropostas, data.resultados_principais, false);
+            renderizarTabela(tbodyPropostas, data.resultados_principais, false);
             
             if (data.hot_tips && data.hot_tips.length > 0) {
                 let accordionHTML = '';
-                const cabecalhoTabela = `<thead><tr><th>ID</th><th>Data</th><th>Tipo</th><th>Categoria</th><th>Veículo</th><th>Ano</th><th>Preço</th><th>Ações</th></tr></thead>`;
-
                 data.hot_tips.forEach((tip, index) => {
                     const id = `tip-${index}`;
-                    accordionHTML += `<div class="accordion-item">
-                                        <h2 class="accordion-header">
-                                            <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${id}">${tip.titulo}</button>
-                                        </h2>
-                                        <div id="collapse-${id}" class="accordion-collapse collapse" data-bs-parent="#hot-tips-accordion">
-                                            <div class="accordion-body p-2">
-                                                <div class="table-responsive">
-                                                    <table class="table table-sm table-hover mb-0">
-                                                        ${cabecalhoTabela}
-                                                        <tbody id="tbody-${id}"></tbody>
-                                                    </table>
-                                                </div>
-                                            </div>
-                                        </div>
-                                      </div>`;
+                    accordionHTML += `<div class="accordion-item"><h2 class="accordion-header"><button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" data-bs-target="#collapse-${id}">${tip.titulo}</button></h2><div id="collapse-${id}" class="accordion-collapse collapse" data-bs-parent="#hot-tips-accordion"><div class="accordion-body p-2"><div class="table-responsive"><table class="table table-sm table-hover mb-0"><thead><tr><th>ID</th><th>Data</th><th>Tipo</th><th>Categoria</th><th>Fabricante</th><th>Modelo</th><th>Câmbio</th><th>Ano</th><th>Preço</th><th>Cor</th><th>Anunciante</th></tr></thead><tbody id="tbody-${id}"></tbody></table></div></div></div></div>`;
                 });
                 hotTipsAccordion.innerHTML = accordionHTML;
                 data.hot_tips.forEach((tip, index) => {
-                    renderizarTabelaPropostas(document.getElementById(`tbody-tip-${index}`), tip.resultados, true);
+                    renderizarTabela(document.getElementById(`tbody-tip-${index}`), tip.resultados, true);
                 });
             }
         } catch (error) { 
             console.error("Erro na pesquisa:", error);
-            tbodyPropostas.innerHTML = `<tr><td colspan="8" class="text-danger text-center">Ocorreu um erro ao buscar os dados.</td></tr>`;
+            tbodyPropostas.innerHTML = `<tr><td colspan="12" class="text-danger text-center">Ocorreu um erro ao buscar os dados.</td></tr>`;
         }
     };
     
@@ -302,12 +239,10 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) { alert(`Erro: ${error.message}`); }
     });
 
-    // Listener de eventos unificado para as tabelas de propostas
-    document.getElementById('main-content').addEventListener('click', async (e) => {
+    tbodyPropostas.addEventListener('click', async (e) => {
         const btnEditar = e.target.closest('.btn-editar-proposta');
         const btnExcluir = e.target.closest('.btn-excluir-proposta');
-        const btnVisualizar = e.target.closest('.btn-visualizar-proposta');
-
+        
         if (btnEditar) {
             const proposta = JSON.parse(btnEditar.closest('tr').dataset.proposta);
             preencherFormularioProposta(proposta);
@@ -320,13 +255,9 @@ document.addEventListener('DOMContentLoaded', () => {
                     const resultado = await response.json();
                     if (!resultado.success) throw new Error(resultado.message);
                     alert(resultado.message);
-                    dispararPesquisa(); // Atualiza a tabela principal
+                    dispararPesquisa();
                 } catch (error) { alert(`Erro: ${error.message}`); }
             }
-        }
-        if(btnVisualizar) {
-            const propostaId = btnVisualizar.dataset.id;
-            carregarPropostaParaEdicao(propostaId);
         }
     });
     

@@ -1,10 +1,20 @@
 <!-- clientes.html -->
-<div class="row">
-    <!-- Coluna do Formulário -->
-    <div class="col-lg-5">
-        <h4 id="form-cliente-titulo">Cadastrar Novo Cliente</h4>
-        <div class="card">
+<div class="row justify-content-center">
+    <!-- Coluna Única para o formulário e propostas -->
+    <div class="col-lg-10 col-xl-8">
+        
+        <!-- Área de busca e formulário -->
+        <div class="card shadow-sm">
             <div class="card-body">
+                <h4 id="form-cliente-titulo">Cadastrar Novo Cliente</h4>
+                <p>Busque por um cliente para editar ou preencha os campos para criar um novo.</p>
+                
+                <div class="mb-3">
+                    <label for="cliente-search" class="form-label">Buscar Cliente</label>
+                    <select id="cliente-search" class="form-select"></select>
+                </div>
+                <hr>
+
                 <form id="form-cliente">
                     <input type="hidden" id="cliente-id">
                     <div class="mb-3">
@@ -50,40 +60,46 @@
                         <label for="cliente-observacao" class="form-label">Observações</label>
                         <textarea class="form-control" id="cliente-observacao" rows="3"></textarea>
                     </div>
-                    <button type="submit" id="btn-salvar-cliente" class="btn btn-primary">Salvar</button>
-                    <button type="button" id="btn-limpar-cliente" class="btn btn-secondary">Limpar</button>
+                    
+                    <!-- Botões de Ação -->
+                    <div id="botoes-acao-cliente">
+                        <button type="submit" id="btn-salvar-cliente" class="btn btn-primary">
+                            <i class="bi bi-save me-1"></i>Salvar
+                        </button>
+                        <button type="button" id="btn-atualizar-cliente" class="btn btn-warning d-none">
+                            <i class="bi bi-pencil-square me-1"></i>Atualizar
+                        </button>
+                        <button type="button" id="btn-excluir-cliente" class="btn btn-danger d-none">
+                            <i class="bi bi-trash me-1"></i>Excluir
+                        </button>
+                        <button type="button" id="btn-limpar-cliente" class="btn btn-secondary">
+                            <i class="bi bi-eraser me-1"></i>Limpar
+                        </button>
+                    </div>
                 </form>
             </div>
         </div>
         
+        <!-- Área de Propostas do Cliente (inicialmente oculta) -->
         <div id="cliente-propostas-area" class="mt-4" style="display: none;">
-            <h4 id="cliente-propostas-titulo">Propostas</h4>
-            <div class="table-responsive">
-                <table class="table table-bordered table-sm">
-                    <thead>
-                        <tr>
-                            <th>ID</th><th>Tipo</th><th>Descrição</th><th>Ações</th>
-                        </tr>
-                    </thead>
-                    <tbody id="tbody-cliente-propostas"></tbody>
-                </table>
+            <div class="card shadow-sm">
+                <div class="card-body">
+                    <h4 id="cliente-propostas-titulo">Propostas</h4>
+                    <div class="table-responsive">
+                        <table class="table table-striped table-hover table-sm">
+                            <thead>
+                                <!--- INÍCIO DA CORREÇÃO DEFINITIVA --->
+                                <tr>
+                                    <th>ID</th><th>Data</th><th>Tipo</th><th>Categoria</th><th>Veículo</th>
+                                    <th>Ano</th><th>Preço</th><th>Ações</th>
+                                </tr>
+                                <!--- FIM DA CORREÇÃO DEFINITIVA --->
+                            </thead>
+                            <tbody id="tbody-cliente-propostas"></tbody>
+                        </table>
+                    </div>
+                </div>
             </div>
-        </div>
-    </div>
-
-    <!-- Coluna da Tabela -->
-    <div class="col-lg-7">
-        <h4>Clientes Cadastrados</h4>
-        <div class="table-responsive">
-            <table class="table table-striped table-hover">
-                <thead>
-                    <tr>
-                        <th>Nome</th><th>Telefone</th><th>Observação</th><th>Ações</th>
-                    </tr>
-                </thead>
-                <tbody id="tbody-clientes">
-                </tbody>
-            </table>
         </div>
     </div>
 </div>
