@@ -74,8 +74,11 @@
                             <div class="col-md-3"><label class="form-label">Ano Mínimo</label><input type="number" id="prop-ano-min" class="form-control filtro-auto" placeholder="ex: 2020"></div>
                             <div class="col-md-3"><label class="form-label">Ano Máximo</label><input type="number" id="prop-ano-max" class="form-control filtro-auto" placeholder="ex: 2023"></div>
                             <div class="col-md-3"><label class="form-label">Cor</label><select id="prop-cor" class="form-select filtro-auto"></select></div>
-                            <div class="col-md-3"><label class="form-label">Preço Mínimo</label><input type="number" id="prop-preco-min" class="form-control filtro-auto" placeholder="ex: 45.000"></div>
-                            <div class="col-md-3"><label class="form-label">Preço Máximo</label><input type="number" id="prop-preco-max" class="form-control filtro-auto" placeholder="ex: 55.000"></div>
+                            
+                            <!-- CORREÇÃO AQUI: type="text" para permitir formatação com pontos -->
+                            <div class="col-md-3"><label class="form-label">Preço Mínimo</label><input type="text" id="prop-preco-min" class="form-control filtro-auto" placeholder="ex: 45.000"></div>
+                            <div class="col-md-3"><label class="form-label">Preço Máximo</label><input type="text" id="prop-preco-max" class="form-control filtro-auto" placeholder="ex: 55.000"></div>
+                            
                             <div class="col-md-6"><label for="prop-pessoa" class="form-label">Pessoa/Empresa</label><select id="prop-pessoa" class="form-select filtro-manual"></select></div>
                             <div class="col-md-12"><label for="prop-obs" class="form-label">Observações</label><textarea id="prop-obs" class="form-control" rows="2"></textarea></div>
                         </div>

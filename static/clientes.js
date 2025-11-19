@@ -1,38 +1,30 @@
 // static/clientes.js
 
 document.addEventListener('DOMContentLoaded', () => {
-    // Só executa se estivermos na aba de clientes
     const tabClientes = document.getElementById('clientes');
     if (!tabClientes) return;
 
-    // MAPEAMENTO DE ELEMENTOS DA ABA CLIENTES
     const formCliente = document.getElementById('form-cliente');
     const searchSelect = document.getElementById('cliente-search');
     const formTitulo = document.getElementById('form-cliente-titulo');
     const clienteIdInput = document.getElementById('cliente-id');
     
-    // Botões
     const btnSalvar = document.getElementById('btn-salvar-cliente');
     const btnAtualizar = document.getElementById('btn-atualizar-cliente');
     const btnExcluir = document.getElementById('btn-excluir-cliente');
     const btnLimpar = document.getElementById('btn-limpar-cliente');
 
-    // Área de Propostas do Cliente
     const clientePropostasArea = document.getElementById('cliente-propostas-area');
     const tbodyClientePropostas = document.getElementById('tbody-cliente-propostas');
     const clientePropostasTitulo = document.getElementById('cliente-propostas-titulo');
 
-    // Cache de clientes para evitar múltiplas chamadas à API
     let todosClientes = [];
 
-    // FUNÇÕES DE LÓGICA
     const carregarTodosClientes = async () => {
         try {
             const response = await fetch('/api/clientes/listar');
             if (!response.ok) throw new Error('Falha ao buscar lista de clientes.');
             todosClientes = await response.json();
-            
-            // Popula o select de busca
             searchSelect.innerHTML = '<option value="">Digite para buscar...</option>';
             todosClientes.forEach(cliente => {
                 const option = document.createElement('option');
@@ -40,25 +32,18 @@ document.addEventListener('DOMContentLoaded', () => {
                 option.textContent = cliente.nome;
                 searchSelect.appendChild(option);
             });
-            // Reinicializa o select2
-            $(searchSelect).select2({
-                theme: 'bootstrap-5',
-                placeholder: 'Digite para buscar...'
-            });
-
-        } catch (error) {
-            console.error(error);
-            alert(error.message);
-        }
+            $(searchSelect).select2({ theme: 'bootstrap-5', placeholder: 'Digite para buscar...' });
+        } catch (error) { console.error(error); alert(error.message); }
     };
     
     const mudarModoFormulario = (modo, cliente = null) => {
         formCliente.reset();
         clienteIdInput.value = '';
-        document.getElementById('cnh-nao').checked = true;
+        
+        // Reset CNH para Não Informado por padrão
+        document.getElementById('cnh-ni').checked = true;
 
         if (modo === 'edicao' && cliente) {
-            // Preenche o formulário
             clienteIdInput.value = cliente.id;
             document.getElementById('cliente-nome').value = cliente.nome || '';
             document.getElementById('cliente-celular').value = cliente.celular || '';
@@ -66,27 +51,30 @@ document.addEventListener('DOMContentLoaded', () => {
             document.getElementById('cliente-email').value = cliente.email || '';
             document.getElementById('cliente-cpf').value = cliente.cpf || '';
             document.getElementById('cliente-nascimento').value = cliente.nascimento || '';
+            
+            // Logica CNH
             if (cliente.cnh === 'Sim') document.getElementById('cnh-sim').checked = true;
+            else if (cliente.cnh === 'Não') document.getElementById('cnh-nao').checked = true;
+            else document.getElementById('cnh-ni').checked = true;
+
             document.getElementById('cliente-observacao').value = cliente.observacao || '';
 
-            // Ajusta UI
             formTitulo.textContent = `Editando: ${cliente.nome}`;
             btnSalvar.classList.add('d-none');
             btnAtualizar.classList.remove('d-none');
             btnExcluir.classList.remove('d-none');
             
-            // Mostra e carrega propostas
             clientePropostasArea.style.display = 'block';
             clientePropostasTitulo.textContent = `Propostas de ${cliente.nome}`;
             carregarPropostasDoCliente(cliente.nome);
 
-        } else { // modo 'novo'
+        } else { 
             formTitulo.textContent = 'Cadastrar Novo Cliente';
             btnSalvar.classList.remove('d-none');
             btnAtualizar.classList.add('d-none');
             btnExcluir.classList.add('d-none');
             clientePropostasArea.style.display = 'none';
-            $(searchSelect).val(null).trigger('change'); // Limpa a busca
+            $(searchSelect).val(null).trigger('change'); 
         }
     };
 
@@ -102,14 +90,9 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     };
 
-    // Dentro de clientes.js
-
-    // Dentro de clientes.js
-
     const renderizarTabelaPropostasCliente = (propostas) => {
         tbodyClientePropostas.innerHTML = '';
         if (propostas.length === 0) {
-            // CORREÇÃO: Colspan ajustado para 7 colunas
             tbodyClientePropostas.innerHTML = '<tr><td colspan="7" class="text-center">Nenhuma proposta encontrada para este cliente.</td></tr>';
             return;
         }
@@ -137,7 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
                 corSwatch = `<span class="color-swatch" style="${corStyle}" data-bs-toggle="tooltip" title="${p.cor}"></span>`;
             }
 
-            let veiculoDesc = `${p.fabricante || ''} - ${p.modelo || ''}${cambioIcon}${corSwatch}`;
+            let obsInfo = '';
+            if (p.observacoes) {
+                obsInfo = ` <i class="bi bi-info-circle ms-2 text-info" data-bs-toggle="tooltip" title="${p.observacoes}"></i>`;
+            }
+
+            let veiculoDesc = `${p.fabricante || ''} - ${p.modelo || ''}${cambioIcon}${corSwatch}${obsInfo}`;
             
             tr.innerHTML = `
                 <td>${p.id}</td>
@@ -186,58 +174,41 @@ document.addEventListener('DOMContentLoaded', () => {
             if (!resultado.success) throw new Error(resultado.message);
 
             alert(resultado.message);
-            await carregarTodosClientes(); // Recarrega a lista para o select
+            await carregarTodosClientes();
             mudarModoFormulario('novo');
-
-            // Atualiza a lista de clientes na aba de propostas também
             if (typeof popularSelect === 'function') {
                  popularSelect(document.getElementById('prop-pessoa'), '/api/clientes/listar-nomes', 'Selecione');
             }
-        } catch (error) {
-            alert(`Erro: ${error.message}`);
-        }
+        } catch (error) { alert(`Erro: ${error.message}`); }
     };
     
-    // EVENT LISTENERS
     $(searchSelect).on('change', function() {
         const selectedId = $(this).val();
         if (selectedId) {
             const cliente = todosClientes.find(c => c.id == selectedId);
-            if (cliente) {
-                mudarModoFormulario('edicao', cliente);
-            }
+            if (cliente) mudarModoFormulario('edicao', cliente);
         }
     });
     
     btnLimpar.addEventListener('click', () => mudarModoFormulario('novo'));
-
-    formCliente.addEventListener('submit', (e) => {
-        e.preventDefault();
-        salvarOuAtualizarCliente();
-    });
-    
+    formCliente.addEventListener('submit', (e) => { e.preventDefault(); salvarOuAtualizarCliente(); });
     btnAtualizar.addEventListener('click', salvarOuAtualizarCliente);
-
     btnExcluir.addEventListener('click', async () => {
         const id = clienteIdInput.value;
         const nome = document.getElementById('cliente-nome').value;
         if (!id) return;
-
-        if (confirm(`Tem certeza que deseja excluir "${nome}"? Todas as propostas associadas também podem ser afetadas.`)) {
+        if (confirm(`Tem certeza que deseja excluir "${nome}"?`)) {
             try {
                 const response = await fetch(`/api/clientes/excluir/${id}`, { method: 'DELETE' });
                 const resultado = await response.json();
                 if (!resultado.success) throw new Error(resultado.message);
-                
                 alert(resultado.message);
                 await carregarTodosClientes();
                 mudarModoFormulario('novo');
                 if (typeof popularSelect === 'function') {
                      popularSelect(document.getElementById('prop-pessoa'), '/api/clientes/listar-nomes', 'Selecione');
                 }
-            } catch (error) {
-                alert(`Erro: ${error.message}`);
-            }
+            } catch (error) { alert(`Erro: ${error.message}`); }
         }
     });
 
@@ -245,15 +216,11 @@ document.addEventListener('DOMContentLoaded', () => {
         const btnVisualizar = e.target.closest('.btn-visualizar-proposta');
         if (btnVisualizar) {
             const propostaId = btnVisualizar.dataset.id;
-            if (typeof carregarPropostaParaEdicao === 'function') {
-                carregarPropostaParaEdicao(propostaId);
-            } else {
-                alert('Função para visualizar proposta não encontrada.');
-            }
+            if (typeof carregarPropostaParaEdicao === 'function') carregarPropostaParaEdicao(propostaId);
+            else alert('Função para visualizar proposta não encontrada.');
         }
     });
     
-    // INICIALIZAÇÃO DA ABA
     const tabNav = document.getElementById('tab-clientes-nav');
     tabNav.addEventListener('shown.bs.tab', carregarTodosClientes, { once: true });
 });

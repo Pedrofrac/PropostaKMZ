@@ -1,9 +1,29 @@
 // static/app.js
 
 /**
- * Função global para ser chamada de outros scripts (como clientes.js).
- * Busca uma proposta por ID, troca para a aba de propostas e preenche o formulário para edição.
- * @param {string} propostaId - O ID da proposta a ser carregada.
+ * Função auxiliar pura para formatar valores numéricos APENAS com pontos.
+ * Remove qualquer caractere que não seja número e insere pontos de milhar.
+ * Ex: 1000 -> "1.000" | 50550 -> "50.550"
+ */
+function formatarValorVisual(valor) {
+    if (valor === null || valor === undefined || valor === '') return '';
+    
+    // Converte para string e remove tudo que NÃO é dígito (0-9)
+    let v = valor.toString().replace(/\D/g, '');
+    
+    // Regex: Adiciona ponto a cada 3 dígitos, da direita para a esquerda
+    return v.replace(/\B(?=(\d{3})+(?!\d))/g, ".");
+}
+
+/**
+ * Formata o campo de input em tempo real enquanto o usuário digita.
+ */
+function formatarMoedaInput(input) {
+    input.value = formatarValorVisual(input.value);
+}
+
+/**
+ * Carrega uma proposta para edição.
  */
 async function carregarPropostaParaEdicao(propostaId) {
     try {
@@ -28,8 +48,7 @@ async function carregarPropostaParaEdicao(propostaId) {
 }
 
 /**
- * Função global que preenche o formulário de propostas com os dados de um objeto.
- * @param {object} proposta - O objeto da proposta com todos os seus campos.
+ * Preenche o formulário com os dados da proposta e dispara a pesquisa.
  */
 function preencherFormularioProposta(proposta) {
     const form = document.getElementById('form-proposta');
@@ -50,8 +69,11 @@ function preencherFormularioProposta(proposta) {
     
     document.getElementById('prop-ano-min').value = proposta.ano_min || '';
     document.getElementById('prop-ano-max').value = proposta.ano_max || '';
-    document.getElementById('prop-preco-min').value = proposta.preco_min || '';
-    document.getElementById('prop-preco-max').value = proposta.preco_max || '';
+    
+    // Preenche os preços usando a formatação visual (apenas pontos)
+    document.getElementById('prop-preco-min').value = formatarValorVisual(proposta.preco_min);
+    document.getElementById('prop-preco-max').value = formatarValorVisual(proposta.preco_max);
+    
     document.getElementById('prop-obs').value = proposta.observacoes || '';
 
     const selectModelo = document.getElementById('prop-modelo');
@@ -62,7 +84,11 @@ function preencherFormularioProposta(proposta) {
         setTimeout(() => {
             $('#prop-modelo').val(proposta.modelo).trigger('change');
             selectModelo.disabled = false;
+            // Dispara a pesquisa automaticamente ao carregar para edição
+            dispararPesquisa();
         }, 500);
+    } else {
+        dispararPesquisa();
     }
 
     btnSalvar.textContent = `Atualizar ID ${proposta.id}`;
@@ -72,11 +98,11 @@ function preencherFormularioProposta(proposta) {
 
 /**
  * Função central para renderizar qualquer tabela de propostas no sistema.
- * @param {HTMLElement} tbody - O elemento tbody da tabela a ser preenchido.
- * @param {Array} propostas - A lista de objetos de proposta.
- * @param {boolean} isSuggestion - Se true, não renderiza a coluna de ações de edição/exclusão.
  */
 function renderizarTabelaPropostas(tbody, propostas, isSuggestion = false) {
+    // --- CORREÇÃO DO BUG DO TOOLTIP PRESO (Reintegrada) ---
+    document.querySelectorAll('.tooltip').forEach(el => el.remove());
+    
     const colspan = isSuggestion ? 7 : 8;
     tbody.innerHTML = '';
     
@@ -91,9 +117,11 @@ function renderizarTabelaPropostas(tbody, propostas, isSuggestion = false) {
         
         const ano = (p.ano_min && p.ano_max && p.ano_min !== p.ano_max) ? `${p.ano_min}-${p.ano_max}` : (p.ano_min || p.ano_max || '');
         
+        // Formatação de Preço para a Tabela (Usando a função visual limpa)
         let precoExibido = '';
-        const precoMinF = p.preco_min ? new Intl.NumberFormat('pt-BR').format(p.preco_min) : '';
-        const precoMaxF = p.preco_max ? new Intl.NumberFormat('pt-BR').format(p.preco_max) : '';
+        const precoMinF = formatarValorVisual(p.preco_min);
+        const precoMaxF = formatarValorVisual(p.preco_max);
+        
         if (precoMinF && precoMaxF) {
             precoExibido = (precoMinF === precoMaxF) ? precoMaxF : `${precoMinF} - ${precoMaxF}`;
         } else {
@@ -117,8 +145,14 @@ function renderizarTabelaPropostas(tbody, propostas, isSuggestion = false) {
             corSwatch = `<span class="color-swatch" style="${corStyle}" data-bs-toggle="tooltip" title="${p.cor}"></span>`;
         }
         
+        // Observações retornando junto com o veículo (Info Icon)
+        let obsInfo = '';
+        if (p.observacoes) {
+            obsInfo = ` <i class="bi bi-info-circle ms-2 text-info" data-bs-toggle="tooltip" title="${p.observacoes}"></i>`;
+        }
+
         const anunciante = p.pessoa_empresa ? `<span class="text-muted fst-italic">(${p.pessoa_empresa})</span>` : '';
-        let veiculoDesc = `${p.fabricante || ''} - ${p.modelo || ''} ${anunciante}${cambioIcon}${corSwatch}`;
+        let veiculoDesc = `${p.fabricante || ''} - ${p.modelo || ''} ${anunciante}${cambioIcon}${corSwatch}${obsInfo}`;
         
         let cols = `
             <td class="text-nowrap">${p.id}</td>
@@ -140,7 +174,6 @@ function renderizarTabelaPropostas(tbody, propostas, isSuggestion = false) {
                         </button>
                      </td>`;
         } else {
-             // Para sugestões, podemos adicionar um botão de visualização se quisermos
             cols += `<td class="text-nowrap">
                         <button class="btn btn-sm btn-primary btn-icon btn-visualizar-proposta" data-id="${p.id}" data-bs-toggle="tooltip" title="Ver/Editar Proposta">
                             <i class="bi bi-eye"></i>
@@ -154,9 +187,7 @@ function renderizarTabelaPropostas(tbody, propostas, isSuggestion = false) {
     [...tbody.querySelectorAll('[data-bs-toggle="tooltip"]')].map(el => new bootstrap.Tooltip(el));
 }
 
-
 document.addEventListener('DOMContentLoaded', () => {
-    // MAPEAMENTO DE ELEMENTOS
     const loginArea = document.getElementById('login-area'), mainContent = document.getElementById('main-content');
     const passwordInput = document.getElementById('password'), loginButton = document.getElementById('login-button');
     const formProposta = document.getElementById('form-proposta'), tbodyPropostas = document.getElementById('resultado-propostas');
@@ -167,7 +198,6 @@ document.addEventListener('DOMContentLoaded', () => {
         theme: 'bootstrap-5'
     });
 
-    // FUNÇÕES
     window.popularSelect = async (selectElement, apiUrl, defaultOptionText) => {
         try {
             const response = await fetch(apiUrl);
@@ -195,14 +225,17 @@ document.addEventListener('DOMContentLoaded', () => {
         dispararPesquisa();
     };
 
-    const dispararPesquisa = async () => {
+    // Tornado global para uso em clientes.js
+    window.dispararPesquisa = async () => { 
         tbodyPropostas.innerHTML = `<tr><td colspan="8" class="text-center">Buscando...</td></tr>`;
         hotTipsAccordion.innerHTML = '';
         
         const criterios = {
             tipo: document.getElementById('prop-tipo').value, categoria: $('#prop-categoria').val(), fabricante: $('#prop-fabricante').val(), modelo: $('#prop-modelo').val(),
             ano_min: document.getElementById('prop-ano-min').value, ano_max: document.getElementById('prop-ano-max').value, cor: $('#prop-cor').val(),
-            preco_min: document.getElementById('prop-preco-min').value, preco_max: document.getElementById('prop-preco-max').value,
+            // Remove os pontos antes de enviar para o backend, pois o backend espera números puros
+            preco_min: document.getElementById('prop-preco-min').value.replace(/\./g, ''), 
+            preco_max: document.getElementById('prop-preco-max').value.replace(/\./g, ''),
             cambio_automatico: document.getElementById('cambio-automatico').checked, cambio_manual: document.getElementById('cambio-manual').checked,
         };
         try {
@@ -245,15 +278,18 @@ document.addEventListener('DOMContentLoaded', () => {
     
     const configurarGatilhosPesquisa = () => {
         document.querySelectorAll('.filtro-auto').forEach(el => {
-            if (el.matches('input[type="number"]')) {
+            if (el.matches('input[type="number"]') || el.id.includes('preco')) {
                 el.addEventListener('keyup', dispararPesquisa);
+                if (el.id.includes('preco')) {
+                     el.addEventListener('input', (e) => formatarMoedaInput(e.target));
+                }
             } else if (el.matches('input[type="checkbox"]')) {
                 el.addEventListener('change', () => {
                     if(el.id === 'cambio-automatico' && el.checked) document.getElementById('cambio-manual').checked = false;
                     if(el.id === 'cambio-manual' && el.checked) document.getElementById('cambio-automatico').checked = false;
                     dispararPesquisa();
                 });
-            } else { // Selects
+            } else { 
                 el.addEventListener('change', dispararPesquisa);
             }
         });
@@ -263,7 +299,6 @@ document.addEventListener('DOMContentLoaded', () => {
         $('#prop-fabricante').on('change', function () {
             const fab = $(this).val();
             const selectModelo = document.getElementById('prop-modelo');
-            
             if (!fab) {
                 selectModelo.innerHTML = '<option value="">Escolha um Fabricante</option>';
                 selectModelo.disabled = true;
@@ -288,8 +323,9 @@ document.addEventListener('DOMContentLoaded', () => {
             cambio: document.getElementById('cambio-automatico').checked ? 'Automatico' : (document.getElementById('cambio-manual').checked ? 'Manual' : ''),
             ano_min: document.getElementById('prop-ano-min').value,
             ano_max: document.getElementById('prop-ano-max').value,
-            preco_min: document.getElementById('prop-preco-min').value,
-            preco_max: document.getElementById('prop-preco-max').value,
+            // Remove pontos antes de salvar
+            preco_min: document.getElementById('prop-preco-min').value.replace(/\./g, ''),
+            preco_max: document.getElementById('prop-preco-max').value.replace(/\./g, ''),
             cor: $('#prop-cor').val(),
             observacoes: document.getElementById('prop-obs').value
         };
@@ -302,7 +338,7 @@ document.addEventListener('DOMContentLoaded', () => {
         } catch (error) { alert(`Erro: ${error.message}`); }
     });
 
-    // Listener de eventos unificado para as tabelas de propostas
+    // Listener de eventos unificado
     document.getElementById('main-content').addEventListener('click', async (e) => {
         const btnEditar = e.target.closest('.btn-editar-proposta');
         const btnExcluir = e.target.closest('.btn-excluir-proposta');
@@ -320,7 +356,7 @@ document.addEventListener('DOMContentLoaded', () => {
                     const resultado = await response.json();
                     if (!resultado.success) throw new Error(resultado.message);
                     alert(resultado.message);
-                    dispararPesquisa(); // Atualiza a tabela principal
+                    dispararPesquisa(); 
                 } catch (error) { alert(`Erro: ${error.message}`); }
             }
         }

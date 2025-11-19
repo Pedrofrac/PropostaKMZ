@@ -91,21 +91,26 @@ document.addEventListener('DOMContentLoaded', () => {
     };
 
     const carregarPropostasDoCliente = async (nomeCliente) => {
-        tbodyClientePropostas.innerHTML = `<tr><td colspan="9">Carregando propostas...</td></tr>`;
+        tbodyClientePropostas.innerHTML = `<tr><td colspan="8">Carregando propostas...</td></tr>`;
         try {
             const response = await fetch(`/api/propostas/por-cliente/${encodeURIComponent(nomeCliente)}`);
             if (!response.ok) throw new Error('Erro ao buscar propostas do cliente.');
             const propostas = await response.json();
             renderizarTabelaPropostasCliente(propostas);
         } catch (error) {
-            tbodyClientePropostas.innerHTML = `<tr><td colspan="9" class="text-danger">${error.message}</td></tr>`;
+            tbodyClientePropostas.innerHTML = `<tr><td colspan="8" class="text-danger">${error.message}</td></tr>`;
         }
     };
+
+    // Dentro de clientes.js
+
+    // Dentro de clientes.js
 
     const renderizarTabelaPropostasCliente = (propostas) => {
         tbodyClientePropostas.innerHTML = '';
         if (propostas.length === 0) {
-            tbodyClientePropostas.innerHTML = '<tr><td colspan="9" class="text-center">Nenhuma proposta encontrada para este cliente.</td></tr>';
+            // CORREÇÃO: Colspan ajustado para 7 colunas
+            tbodyClientePropostas.innerHTML = '<tr><td colspan="7" class="text-center">Nenhuma proposta encontrada para este cliente.</td></tr>';
             return;
         }
         propostas.forEach(p => {
@@ -119,11 +124,20 @@ document.addEventListener('DOMContentLoaded', () => {
             else precoExibido = precoMinF || precoMaxF;
 
             const badge = `<span class="badge bg-${p.tipo === 'Compra' ? 'primary' : 'success'} text-capitalize">${p.tipo}</span>`;
+            
             let cambioIcon = '';
             if (p.cambio === 'Automatico') cambioIcon = `<i class="bi bi-gear-wide-connected cambio-icon text-muted ms-1" data-bs-toggle="tooltip" title="Automático"></i>`;
             else if (p.cambio === 'Manual') cambioIcon = `<i class="bi bi-gear cambio-icon text-muted ms-1" data-bs-toggle="tooltip" title="Manual"></i>`;
             
-            let veiculoDesc = `${p.fabricante||''} ${p.modelo||''}${cambioIcon}`;
+            let corSwatch = '';
+            if (p.cor) {
+                const corMap = { "BRANCA": "white", "PRETA": "black", "PRATA": "silver", "CINZA": "gray", "VERMELHA": "red", "AZUL": "blue", "VERDE": "green", "AMARELA": "yellow", "MARRON": "saddlebrown", "DOURADA": "gold", "VINHO": "maroon" };
+                const corCss = corMap[p.cor.toUpperCase()] || p.cor.toLowerCase();
+                const corStyle = `background-color: ${corCss};`;
+                corSwatch = `<span class="color-swatch" style="${corStyle}" data-bs-toggle="tooltip" title="${p.cor}"></span>`;
+            }
+
+            let veiculoDesc = `${p.fabricante || ''} - ${p.modelo || ''}${cambioIcon}${corSwatch}`;
             
             tr.innerHTML = `
                 <td>${p.id}</td>
@@ -133,7 +147,6 @@ document.addEventListener('DOMContentLoaded', () => {
                 <td>${veiculoDesc}</td>
                 <td>${ano}</td>
                 <td>${precoExibido}</td>
-                <td>${p.cor||''}</td>
                 <td>
                     <button class="btn btn-sm btn-primary btn-icon btn-visualizar-proposta" data-id="${p.id}" data-bs-toggle="tooltip" title="Ver/Editar Proposta">
                         <i class="bi bi-eye"></i>
@@ -241,7 +254,6 @@ document.addEventListener('DOMContentLoaded', () => {
     });
     
     // INICIALIZAÇÃO DA ABA
-    // Usa um listener na aba para carregar os clientes apenas quando ela for ativada
     const tabNav = document.getElementById('tab-clientes-nav');
     tabNav.addEventListener('shown.bs.tab', carregarTodosClientes, { once: true });
 });

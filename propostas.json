@@ -638,5 +638,21 @@
         "cor": "PRETA",
         "observacoes": "Versão XRE. Estoque da loja.",
         "data_inclusao": "09-11-2025"
+    },
+    {
+        "id": "41",
+        "tipo": "Compra",
+        "pessoa_empresa": "Ana Costa",
+        "categoria": "Hatch",
+        "fabricante": "",
+        "modelo": "",
+        "cambio": "",
+        "ano_min": "",
+        "ano_max": "",
+        "preco_min": "",
+        "preco_max": "",
+        "cor": "",
+        "observacoes": "",
+        "data_inclusao": "19-11-2025"
     }
 ]
