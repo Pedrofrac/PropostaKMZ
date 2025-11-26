@@ -8,6 +8,12 @@ env/
 .vscode/
 .DS_Store
 
-# Arquivos a serem ignorados
+# Arquivos a serem ignorados (Executáveis e atalhos)
 *.exe
 *.lnk
+
+# --- BANCO DE DADOS (IMPORTANTE) ---
+# Ignora estes arquivos para proteger os dados reais no servidor
+clientes.json
+propostas.json
+contador.json
